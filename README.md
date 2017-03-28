@@ -43,7 +43,7 @@ GET https://api.vcd.portal.skyscapecloud.com/api/vApp/vm-12345678-aaaa-bbbb-cccc
 The vcloud-metrics MicroService
 -------------------------------
 This is a microservice to mine the vCloud Director Metrics API and return a usable JSON structure intended for injecting directly into elastic search, using the logstash configuration also provided here. We have also provided some exported searches, visualisations and a dashboard that you can import into Kibana.
-![enter image description here](images/dashboard.png)
+![Kibana Dashboard](raw/master/images/dashoard.png)
 
 The microservice requires a JSON string containing the vCloud API endpoint and your user credentials:
 
@@ -62,7 +62,14 @@ This JSON is then POST'ed to the microservice /stats endpoint:
 The microservice will then use the vCloud Query API to enumerate all VM instances in your account and iteratively call the relevant /metrics/current endpoint. All the metrics are returned as a JSON list structure:
 
 ```
-[{"name":"cpu.usage.average","unit":"PERCENT","value":"0.09","vm_name":"node02.devops.ukcloud.com"},{"name":"cpu.usage.maximum","unit":"PERCENT","value":"0.09","vm_name":"node02.devops.ukcloud.com"},{"name":"cpu.usagemhz.average","unit":"MEGAHERTZ","value":"8.0","vm_name":"node02.devops.ukcloud.com"},{"name":"disk.provisioned.latest","unit":"KILOBYTE","value":"19044612","vm_name":"node02.devops.ukcloud.com"},{"name":"mem.usage.average","unit":"PERCENT","value":"0.0","vm_name":"node02.devops.ukcloud.com"},{"name":"disk.used.latest","unit":"KILOBYTE","value":"10301699","vm_name":"node02.devops.ukcloud.com"},{"name":"disk.write.average","unit":"KILOBYTES_PER_SECOND","value":"0.0","vm_name":"node02.devops.ukcloud.com"},{"name":"disk.read.average","unit":"KILOBYTES_PER_SECOND","value":"0.0","vm_name":"node02.devops.ukcloud.com"},
+[{"name":"cpu.usage.average","unit":"PERCENT","value":"0.09","vm_name":"node02.devops.ukcloud.com"},
+{"name":"cpu.usage.maximum","unit":"PERCENT","value":"0.09","vm_name":"node02.devops.ukcloud.com"},
+{"name":"cpu.usagemhz.average","unit":"MEGAHERTZ","value":"8.0","vm_name":"node02.devops.ukcloud.com"},
+{"name":"disk.provisioned.latest","unit":"KILOBYTE","value":"19044612","vm_name":"node02.devops.ukcloud.com"},
+{"name":"mem.usage.average","unit":"PERCENT","value":"0.0","vm_name":"node02.devops.ukcloud.com"},
+{"name":"disk.used.latest","unit":"KILOBYTE","value":"10301699","vm_name":"node02.devops.ukcloud.com"},
+{"name":"disk.write.average","unit":"KILOBYTES_PER_SECOND","value":"0.0","vm_name":"node02.devops.ukcloud.com"},
+{"name":"disk.read.average","unit":"KILOBYTES_PER_SECOND","value":"0.0","vm_name":"node02.devops.ukcloud.com"},
 ...
 ]
 ```
