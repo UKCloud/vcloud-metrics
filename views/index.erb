@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Welcome to vCloud Metrics Portal</title>
+</head>
+<body>
+<h1>Welcome to your vCloud Metrics Portal</h1>
+
+To retrieve vCloud Director usage metrics in a user-friendly JSON format
+suitable for indexing with Elastic Search, POST the following JSON body to:
+<p>
+<a href="http://<%= env['HTTP_HOST'] %>/stats">http://<%= env['HTTP_HOST'] %>/stats</a>
+<P>
+<pre>
+{ "vcd_api_url": "https://api.vcd.z0000f.r00006.frn.portal.skyscapecloud.com/api",
+  "vcd_username": "1234.1.456789@1-1-11-123456",
+  "vcd_password": "Sup3rS3creT" }
+</pre>
+
+Example using Curl:
+<br>
+<pre>
+curl -X POST -d '{"vcd_api_url": "https://api.vcd.z0000f.r00006.frn.portal.skyscapecloud.com/api","vcd_username": "1234.1.456789@1-1-11-123456", "vcd_password": "Sup3rS3creT" }' -i http://<%= env['HTTP_HOST'] %>/stats
+</pre>
+</body>
+</html>
