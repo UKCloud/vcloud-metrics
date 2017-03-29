@@ -43,7 +43,8 @@ GET https://api.vcd.portal.skyscapecloud.com/api/vApp/vm-12345678-aaaa-bbbb-cccc
 The vcloud-metrics MicroService
 -------------------------------
 This is a microservice to mine the vCloud Director Metrics API and return a usable JSON structure intended for injecting directly into elastic search, using the logstash configuration also provided here. We have also provided some exported searches, visualisations and a dashboard that you can import into Kibana.
-![Kibana Dashboard](raw/master/images/dashoard.png)
+
+![Kibana Dashboard](images/dashoard.png)
 
 The microservice requires a JSON string containing the vCloud API endpoint and your user credentials:
 
