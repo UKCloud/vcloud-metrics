@@ -31,39 +31,61 @@ class VCloudStats < Sinatra::Base
       halt 401, {'Content-Type' => 'text/json'}, e.to_json
     end
 
-    # Now use the query API to retrieve a list of VMs
-    begin
-      response = RestClient.get "#{data['vcd_api_url']}/query",
-                                :params => { :type => 'vm' },
-                                'x-vcloud-authorization' => auth_token,
-                                :accept => 'application/*+xml;version=5.6'
-    rescue => e
-      halt 500, {'Content-Type' => 'text/json'}, e.to_json
-    end
+    vm_queue = []
 
-    parsed = XmlSimple.xml_in(response.to_str)
+    # Now use the query API to retrieve a list of VMs
+    query_url = "#{data['vcd_api_url']}/query?type=vm"
+    loop do
+
+      begin
+        response = RestClient.get query_url,
+                                  # :params => { :type => 'vm' },
+                                  'x-vcloud-authorization' => auth_token,
+                                  :accept => 'application/*+xml;version=5.6'
+      rescue => e
+        halt 500, {'Content-Type' => 'text/json'}, e.to_json
+      end
+
+      parsed = XmlSimple.xml_in(response.to_str)
+
+      # For each VM, call the /api/metrics/current API endpoint if it is not
+      # a vApp Template: test for 'catalogName' property existing.
+      parsed['VMRecord'].each do |vm|
+        if vm['catalogName'].nil?
+          # puts "Found #{vm['name']}"
+          vm_queue << { 'name' => vm['name'], 'url' => "#{vm['href']}/metrics/current" }
+        end
+      end
+
+      # Check for additional pages of results
+      found_next_page = false
+
+      parsed['Link'].each do |link|
+        if link['rel'] == "nextPage"
+          found_next_page = true
+          query_url = link['href']
+        end
+      end 
+    
+      break unless found_next_page == true
+    end
 
     stats_output = []
 
-    # For each VM, call the /api/metrics/current API endpoint if it is not
-    # a vApp Template: test for 'catalogName' property existing.
-    parsed['VMRecord'].each do |vm|
+    vm_queue.each do |vm|
+      begin
+        response = RestClient.get vm['url'],
+                                  'x-vcloud-authorization' => auth_token,
+                                  :accept => 'application/*+xml;version=5.6'
+      rescue => e
+        halt 500, {'Content-Type' => 'text/json'}, e.to_json
+      end
+      stats = XmlSimple.xml_in(response.to_str)
 
-      if vm['catalogName'].nil?
-        begin
-          response = RestClient.get "#{vm['href']}/metrics/current",
-                                    'x-vcloud-authorization' => auth_token,
-                                    :accept => 'application/*+xml;version=5.6'
-        rescue => e
-          halt 500, {'Content-Type' => 'text/json'}, e.to_json
-        end
-        stats = XmlSimple.xml_in(response.to_str)
-
-        # For each VM metric, add the hostname and append to the output array
-        stats['Metric'].each do |metric|
-          metric['vm_name'] = vm['name']
-          stats_output << metric
-        end
+      # For each VM metric, add the hostname and append to the output array
+      stats['Metric'].each do |metric|
+        metric['vm_name'] = vm['name']
+        stats_output << metric
       end
     end
 
