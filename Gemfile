@@ -4,5 +4,8 @@ gem 'puma'
 gem 'rest-client'
 gem 'xml-simple'
 gem 'sinatra'
-gem 'rspec'
-gem 'rack-test'
+
+group :test, :development do
+  gem 'rspec'
+  gem 'rack-test'
+end
