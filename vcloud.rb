@@ -119,7 +119,7 @@ class VCloudStats < Sinatra::Base
 
     t2 = Time.now
     STDOUT.puts "\nProcessed #{vm_queue.length} vm records in #{t2-t1} seconds"
-    [ 200, { 'Content-Type' => 'text/json' }, stats_output.to_json ]
+    [ 200, { 'Content-Type' => 'text/json' }, stats_output.flatten.to_json ]
   end
 
   # start the server if ruby file executed directly
