@@ -101,7 +101,7 @@ Once you have an OpenShift cluster ready to use, you can deploy the vcloud-metri
 
 ```
 #> oc new-project vcloud
-#> oc new-app https://github.com/ukcloud/vcloud-metrics.git --name metrics
+#> oc new-app https://github.com/ukcloud/vcloud-metrics.git --name metrics --strategy=source
 #> oc expose service metrics
 #> oc status
 In project vcloud on server https://192.168.99.100:8443
